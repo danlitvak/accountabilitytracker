@@ -102,9 +102,17 @@ function buildMonthCard(monthDate) {
     const status = entry?.status || "empty";
 
     const cell = document.createElement("div");
+    const cell = document.createElement("button");
+    cell.type = "button";
     cell.className = `day-cell ${status}`;
     cell.textContent = String(day);
     cell.title = buildDayTooltip(key, entry);
+
+    cell.addEventListener("click", () => {
+      if (key === todayKey) {
+        activitiesInput.focus();
+      }
+    });
 
     dayGrid.appendChild(cell);
   }

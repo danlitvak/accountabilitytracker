@@ -7,6 +7,12 @@
   --missed: #b42323;
   --neutral: #6a6a6a;
   --empty: #eeeeee;
+  --muted: #666666;
+  --border: #d8d8d8;
+  --completed: #14833b;
+  --missed: #b42323;
+  --neutral: #6a6a6a;
+  --empty: #ededed;
 }
 
 * {
@@ -94,6 +100,30 @@ body {
   border: 2px solid #111;
   border-radius: 0;
   padding: 10px;
+.app {
+  max-width: 1080px;
+  margin: 0 auto;
+  padding: 18px;
+  display: grid;
+  gap: 14px;
+}
+
+.topbar h1 {
+  margin: 0;
+  font-size: 1.4rem;
+  letter-spacing: 0.01em;
+}
+
+.subtitle {
+  margin: 6px 0 0;
+  color: var(--muted);
+  font-size: 0.92rem;
+}
+
+.panel {
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 12px;
 }
 
 .panel-header {
@@ -107,6 +137,7 @@ body {
 h2 {
   margin: 0;
   font-size: 1rem;
+  font-size: 1.05rem;
 }
 
 .date-label,
@@ -114,6 +145,7 @@ h2 {
   margin: 0;
   color: var(--muted);
   font-size: 0.82rem;
+  font-size: 0.84rem;
 }
 
 .label {
@@ -135,6 +167,9 @@ h2 {
   font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
   font-size: 0.78rem;
   white-space: pre-wrap;
+  font-size: 0.84rem;
+  color: var(--muted);
+  margin-bottom: 5px;
 }
 
 .label.inline {
@@ -147,6 +182,8 @@ textarea {
   color: var(--fg);
   border: 1px solid #111;
   border-radius: 0;
+  border: 1px solid var(--border);
+  border-radius: 6px;
   padding: 8px;
   resize: vertical;
   min-height: 112px;
@@ -159,6 +196,8 @@ textarea {
   align-items: center;
   gap: 10px;
   font-size: 0.86rem;
+  gap: 12px;
+  font-size: 0.88rem;
 }
 
 .status-controls label {
@@ -176,11 +215,19 @@ button {
   border-radius: 0;
   font: inherit;
   font-size: 0.88rem;
+  border: 1px solid #222;
+  background: #fff;
+  color: #111;
+  padding: 7px 10px;
+  border-radius: 6px;
+  font: inherit;
+  font-size: 0.9rem;
   cursor: pointer;
 }
 
 button:hover {
   background: #f2f2f2;
+  background: #f5f5f5;
 }
 
 .save-message {
@@ -188,12 +235,14 @@ button:hover {
   margin: 8px 0 0;
   color: var(--muted);
   font-size: 0.8rem;
+  font-size: 0.82rem;
 }
 
 .key {
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
+  gap: 10px;
 }
 
 .swatch {
@@ -203,6 +252,10 @@ button:hover {
   display: inline-block;
   margin-right: 4px;
   border: 1px solid rgba(0, 0, 0, 0.2);
+  border-radius: 2px;
+  display: inline-block;
+  margin-right: 4px;
+  border: 1px solid rgba(0, 0, 0, 0.15);
 }
 
 .swatch.completed { background: var(--completed); }
@@ -213,18 +266,22 @@ button:hover {
 .months-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(214px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(212px, 1fr));
   gap: 10px;
 }
 
 .month-card {
   border: 1px solid #111;
   border-radius: 0;
+  border: 1px solid var(--border);
+  border-radius: 6px;
   padding: 8px;
 }
 
 .month-title {
   margin: 0 0 6px;
   font-size: 0.82rem;
+  font-size: 0.85rem;
 }
 
 .day-grid {
@@ -241,6 +298,13 @@ button:hover {
   align-items: center;
   justify-content: center;
   font-size: 0.68rem;
+  height: 22px;
+  border-radius: 4px;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.7rem;
 }
 
 .day-cell.placeholder {
@@ -257,5 +321,13 @@ button:hover {
   .app {
     grid-template-columns: minmax(340px, 1fr) 1.35fr;
     align-items: start;
+  }
+    grid-template-columns: minmax(320px, 1fr) 1.4fr;
+    align-items: start;
+  }
+
+  .topbar,
+  .overview-panel {
+    grid-column: 1 / -1;
   }
 }
