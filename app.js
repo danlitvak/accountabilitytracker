@@ -1,18 +1,26 @@
 const STORAGE_KEY = "accountabilityTracker.v1";
 const INFO_COLLAPSED_KEY = "accountabilityTracker.infoCollapsed";
 const MONTH_COUNT = 6;
+const WEEKDAY_LABELS = ["S", "M", "T", "W", "T", "F", "S"];
 
 const todayDate = new Date();
 const todayKey = formatDateKey(todayDate);
 
 const todayDateEl = document.getElementById("todayDate");
 const activitiesInput = document.getElementById("activitiesInput");
-const statusInputs = document.querySelectorAll('input[name="status"]');
-const saveBtn = document.getElementById("saveBtn");
+const saveCompletedBtn = document.getElementById("saveCompletedBtn");
+const saveMissedBtn = document.getElementById("saveMissedBtn");
+const saveNeutralBtn = document.getElementById("saveNeutralBtn");
 const saveMessage = document.getElementById("saveMessage");
 const monthsGrid = document.getElementById("monthsGrid");
 const aboutPanel = document.getElementById("aboutPanel");
 const infoToggle = document.getElementById("infoToggle");
+const last30CompletedEl = document.getElementById("last30Completed");
+const last30MissedEl = document.getElementById("last30Missed");
+const currentStreakEl = document.getElementById("currentStreak");
+const dayPreviewDateEl = document.getElementById("dayPreviewDate");
+const dayPreviewStatusEl = document.getElementById("dayPreviewStatus");
+const dayPreviewTextEl = document.getElementById("dayPreviewText");
 
 let data = loadData();
 
@@ -20,54 +28,110 @@ init();
 
 function init() {
   todayDateEl.textContent = todayDate.toLocaleDateString(undefined, {
-    weekday: "long",
+    weekday: "short",
     year: "numeric",
-    month: "long",
+    month: "short",
     day: "numeric",
   });
 
-  const isCollapsed = localStorage.getItem(INFO_COLLAPSED_KEY) === "1";
-  setAboutPanelCollapsed(isCollapsed);
+  const isCollapsed = localStorage.getItem(INFO_COLLAPSED_KEY) !== "0";
+  setAboutPanelCollapsed(isCollapsed, { immediate: true });
 
   populateTodayForm();
-  renderMonths();
+  renderDashboard();
+  resetDayPreview();
 
-  saveBtn.addEventListener("click", onSave);
+  saveCompletedBtn.addEventListener("click", () => onSave("completed"));
+  saveMissedBtn.addEventListener("click", () => onSave("missed"));
+  saveNeutralBtn.addEventListener("click", () => onSave("neutral"));
   infoToggle.addEventListener("click", onToggleInfo);
+  aboutPanel.addEventListener("transitionend", onAboutPanelTransitionEnd);
 }
 
 function onToggleInfo() {
-  const collapsed = !aboutPanel.classList.contains("is-collapsed");
-  setAboutPanelCollapsed(collapsed);
-  localStorage.setItem(INFO_COLLAPSED_KEY, collapsed ? "1" : "0");
+  const nextCollapsed = !aboutPanel.classList.contains("is-collapsed");
+  setAboutPanelCollapsed(nextCollapsed);
+  localStorage.setItem(INFO_COLLAPSED_KEY, nextCollapsed ? "1" : "0");
 }
 
-function setAboutPanelCollapsed(collapsed) {
-  aboutPanel.classList.toggle("is-collapsed", collapsed);
+function setAboutPanelCollapsed(collapsed, options = {}) {
+  const { immediate = false } = options;
+
+  if (immediate) {
+    aboutPanel.classList.toggle("is-collapsed", collapsed);
+    aboutPanel.style.height = collapsed ? "0px" : `${aboutPanel.scrollHeight}px`;
+    updateInfoToggleState(collapsed);
+    return;
+  }
+
+  if (collapsed) {
+    aboutPanel.style.height = `${aboutPanel.scrollHeight}px`;
+    requestAnimationFrame(() => {
+      aboutPanel.classList.add("is-collapsed");
+      aboutPanel.style.height = "0px";
+    });
+  } else {
+    aboutPanel.classList.remove("is-collapsed");
+    aboutPanel.style.height = "0px";
+    requestAnimationFrame(() => {
+      aboutPanel.style.height = `${aboutPanel.scrollHeight}px`;
+    });
+  }
+
+  updateInfoToggleState(collapsed);
+}
+
+function updateInfoToggleState(collapsed) {
+  infoToggle.classList.toggle("is-active", !collapsed);
   infoToggle.setAttribute("aria-expanded", String(!collapsed));
 }
 
-function populateTodayForm() {
-  const entry = data[todayKey] || { activities: "", status: "neutral" };
-  activitiesInput.value = entry.activities || "";
-  setSelectedStatus(entry.status || "neutral");
+function onAboutPanelTransitionEnd(event) {
+  if (event.propertyName !== "height") {
+    return;
+  }
+
+  if (!aboutPanel.classList.contains("is-collapsed")) {
+    aboutPanel.style.height = "auto";
+  }
 }
 
-function onSave() {
-  const status = getSelectedStatus();
-  const activities = activitiesInput.value.trim();
+function populateTodayForm() {
+  const entry = data[todayKey] || { activities: "" };
+  activitiesInput.value = entry.activities || "";
+}
 
-  data[todayKey] = { status, activities, updatedAt: new Date().toISOString() };
+function onSave(status) {
+  data[todayKey] = {
+    status,
+    activities: activitiesInput.value.trim(),
+    updatedAt: new Date().toISOString(),
+  };
+
   persistData();
-  renderMonths();
+  renderDashboard();
+  saveMessage.textContent = `${formatSavedLabel(status)} ${new Date().toLocaleTimeString([], {
+    hour: "numeric",
+    minute: "2-digit",
+  })}`;
+}
 
-  saveMessage.textContent = `Saved at ${new Date().toLocaleTimeString()}`;
+function renderDashboard() {
+  renderStats();
+  renderMonths();
+}
+
+function renderStats() {
+  const stats = getLast30DayStats();
+  last30CompletedEl.textContent = String(stats.completed);
+  last30MissedEl.textContent = String(stats.missed);
+  currentStreakEl.textContent = String(getCurrentStreak());
 }
 
 function renderMonths() {
   monthsGrid.innerHTML = "";
 
-  for (let offset = MONTH_COUNT - 1; offset >= 0; offset -= 1) {
+  for (let offset = 0; offset < MONTH_COUNT; offset += 1) {
     const monthDate = new Date(todayDate.getFullYear(), todayDate.getMonth() - offset, 1);
     monthsGrid.appendChild(buildMonthCard(monthDate));
   }
@@ -78,14 +142,39 @@ function buildMonthCard(monthDate) {
   const month = monthDate.getMonth();
   const daysInMonth = new Date(year, month + 1, 0).getDate();
   const firstDayOfWeek = new Date(year, month, 1).getDay();
+  const summary = getMonthSummary(year, month);
 
   const card = document.createElement("article");
   card.className = "month-card";
 
+  const header = document.createElement("div");
+  header.className = "month-header";
+
   const title = document.createElement("h3");
   title.className = "month-title";
-  title.textContent = monthDate.toLocaleDateString(undefined, { month: "long", year: "numeric" });
-  card.appendChild(title);
+  title.textContent = monthDate.toLocaleDateString(undefined, {
+    month: "long",
+    year: "numeric",
+  });
+
+  const totals = document.createElement("p");
+  totals.className = "month-totals";
+  totals.textContent = `C ${summary.completed}  M ${summary.missed}  N ${summary.neutral}`;
+
+  header.append(title, totals);
+  card.appendChild(header);
+
+  const weekdayRow = document.createElement("div");
+  weekdayRow.className = "weekday-row";
+
+  WEEKDAY_LABELS.forEach((label) => {
+    const weekday = document.createElement("span");
+    weekday.className = "weekday-cell";
+    weekday.textContent = label;
+    weekdayRow.appendChild(weekday);
+  });
+
+  card.appendChild(weekdayRow);
 
   const dayGrid = document.createElement("div");
   dayGrid.className = "day-grid";
@@ -93,25 +182,28 @@ function buildMonthCard(monthDate) {
   for (let i = 0; i < firstDayOfWeek; i += 1) {
     const placeholder = document.createElement("div");
     placeholder.className = "day-cell placeholder";
+    placeholder.setAttribute("aria-hidden", "true");
     dayGrid.appendChild(placeholder);
   }
 
   for (let day = 1; day <= daysInMonth; day += 1) {
-    const key = formatDateKey(new Date(year, month, day));
+    const date = new Date(year, month, day);
+    const key = formatDateKey(date);
     const entry = data[key];
     const status = entry?.status || "empty";
+    const isToday = key === todayKey;
 
-    const cell = document.createElement("div");
     const cell = document.createElement("button");
     cell.type = "button";
-    cell.className = `day-cell ${status}`;
+    cell.className = `day-cell ${status}${isToday ? " today" : ""}`;
     cell.textContent = String(day);
     cell.title = buildDayTooltip(key, entry);
+    cell.setAttribute("aria-label", buildDayTooltip(key, entry));
+    cell.addEventListener("mouseenter", () => updateDayPreview(date, entry, status));
+    cell.addEventListener("focus", () => updateDayPreview(date, entry, status));
 
     cell.addEventListener("click", () => {
-      if (key === todayKey) {
-        activitiesInput.focus();
-      }
+      updateDayPreview(date, entry, status);
     });
 
     dayGrid.appendChild(cell);
@@ -122,21 +214,81 @@ function buildMonthCard(monthDate) {
 }
 
 function buildDayTooltip(key, entry) {
-  if (!entry) return `${key}: no entry`;
+  if (!entry) {
+    return `${key}: no entry`;
+  }
 
-  const excerpt = entry.activities ? entry.activities.slice(0, 72) : "No activities written";
-  return `${key}: ${entry.status} — ${excerpt}`;
+  const excerpt = entry.activities ? entry.activities.replace(/\s+/g, " ").slice(0, 80) : "No notes";
+  return `${key}: ${entry.status}. ${excerpt}`;
 }
 
-function setSelectedStatus(status) {
-  statusInputs.forEach((input) => {
-    input.checked = input.value === status;
+function updateDayPreview(date, entry, status) {
+  dayPreviewDateEl.textContent = date.toLocaleDateString(undefined, {
+    weekday: "short",
+    month: "long",
+    day: "numeric",
+    year: "numeric",
   });
+  dayPreviewStatusEl.textContent = formatStatusLabel(status);
+  dayPreviewTextEl.textContent = entry?.activities || "No saved commitments for this date.";
 }
 
-function getSelectedStatus() {
-  const checked = Array.from(statusInputs).find((input) => input.checked);
-  return checked ? checked.value : "neutral";
+function resetDayPreview() {
+  dayPreviewDateEl.textContent = "Inspect a date";
+  dayPreviewStatusEl.textContent = "Hover or tap a day";
+  dayPreviewTextEl.textContent = "Saved commitments and notes will show here.";
+}
+
+function getMonthSummary(year, month) {
+  const summary = { completed: 0, missed: 0, neutral: 0 };
+  const daysInMonth = new Date(year, month + 1, 0).getDate();
+
+  for (let day = 1; day <= daysInMonth; day += 1) {
+    const key = formatDateKey(new Date(year, month, day));
+    const status = data[key]?.status;
+    if (status && summary[status] !== undefined) {
+      summary[status] += 1;
+    }
+  }
+
+  return summary;
+}
+
+function getLast30DayStats() {
+  const stats = { completed: 0, missed: 0 };
+
+  for (let offset = 0; offset < 30; offset += 1) {
+    const date = new Date(todayDate);
+    date.setDate(todayDate.getDate() - offset);
+    const status = data[formatDateKey(date)]?.status;
+
+    if (status === "completed") {
+      stats.completed += 1;
+    } else if (status === "missed") {
+      stats.missed += 1;
+    }
+  }
+
+  return stats;
+}
+
+function getCurrentStreak() {
+  let streak = 0;
+
+  for (let offset = 0; offset < 365; offset += 1) {
+    const date = new Date(todayDate);
+    date.setDate(todayDate.getDate() - offset);
+    const status = data[formatDateKey(date)]?.status;
+
+    if (status === "completed") {
+      streak += 1;
+      continue;
+    }
+
+    break;
+  }
+
+  return streak;
 }
 
 function loadData() {
@@ -153,8 +305,36 @@ function persistData() {
 }
 
 function formatDateKey(date) {
-  const y = date.getFullYear();
-  const m = String(date.getMonth() + 1).padStart(2, "0");
-  const d = String(date.getDate()).padStart(2, "0");
-  return `${y}-${m}-${d}`;
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, "0");
+  return `${year}-${month}-${day}`;
+}
+
+function formatSavedLabel(status) {
+  if (status === "completed") {
+    return "Saved as done";
+  }
+
+  if (status === "missed") {
+    return "Saved as missed";
+  }
+
+  return "Saved notes";
+}
+
+function formatStatusLabel(status) {
+  if (status === "completed") {
+    return "Completed";
+  }
+
+  if (status === "missed") {
+    return "Missed";
+  }
+
+  if (status === "neutral") {
+    return "Notes only";
+  }
+
+  return "No entry";
 }
