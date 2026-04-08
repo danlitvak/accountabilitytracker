@@ -1,6 +1,12 @@
 :root {
   --bg: #ffffff;
   --fg: #111111;
+  --muted: #5f5f5f;
+  --border: #cfcfcf;
+  --completed: #14833b;
+  --missed: #b42323;
+  --neutral: #6a6a6a;
+  --empty: #eeeeee;
   --muted: #666666;
   --border: #d8d8d8;
   --completed: #14833b;
@@ -21,6 +27,79 @@ body {
   line-height: 1.35;
 }
 
+.navbar {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 16px;
+  background: #fff;
+  border-bottom: 2px solid #111;
+}
+
+.navbar h1 {
+  margin: 0;
+  font-size: 1rem;
+  letter-spacing: 0.02em;
+}
+
+.icon-btn {
+  border: 1px solid #111;
+  background: #fff;
+  color: #111;
+  width: 30px;
+  height: 30px;
+  border-radius: 4px;
+  font-size: 1rem;
+  cursor: pointer;
+}
+
+.about-panel {
+  border-bottom: 2px solid #111;
+  background: #fff;
+}
+
+.about-panel.is-collapsed {
+  display: none;
+}
+
+.about-content {
+  max-width: 1080px;
+  margin: 0 auto;
+  padding: 12px 18px;
+}
+
+.about-content h2 {
+  margin: 0 0 4px;
+  font-size: 0.96rem;
+}
+
+.about-content p,
+.about-content ul {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.85rem;
+}
+
+.about-content ul {
+  margin-top: 6px;
+  padding-left: 18px;
+}
+
+.app {
+  max-width: 1080px;
+  margin: 0 auto;
+  padding: 14px;
+  display: grid;
+  gap: 12px;
+}
+
+.panel {
+  border: 2px solid #111;
+  border-radius: 0;
+  padding: 10px;
 .app {
   max-width: 1080px;
   margin: 0 auto;
@@ -57,6 +136,7 @@ body {
 
 h2 {
   margin: 0;
+  font-size: 1rem;
   font-size: 1.05rem;
 }
 
@@ -64,11 +144,29 @@ h2 {
 .key {
   margin: 0;
   color: var(--muted);
+  font-size: 0.82rem;
   font-size: 0.84rem;
 }
 
 .label {
   display: block;
+  font-size: 0.82rem;
+  color: var(--muted);
+  margin-bottom: 4px;
+}
+
+.examples-label {
+  margin-top: 6px;
+}
+
+.examples {
+  margin: 0;
+  padding: 8px;
+  border: 1px solid var(--border);
+  background: #fafafa;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 0.78rem;
+  white-space: pre-wrap;
   font-size: 0.84rem;
   color: var(--muted);
   margin-bottom: 5px;
@@ -82,6 +180,8 @@ textarea {
   width: 100%;
   font: inherit;
   color: var(--fg);
+  border: 1px solid #111;
+  border-radius: 0;
   border: 1px solid var(--border);
   border-radius: 6px;
   padding: 8px;
@@ -94,6 +194,8 @@ textarea {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
+  gap: 10px;
+  font-size: 0.86rem;
   gap: 12px;
   font-size: 0.88rem;
 }
@@ -106,6 +208,13 @@ textarea {
 
 button {
   margin-top: 10px;
+  border: 1px solid #111;
+  background: #fff;
+  color: #111;
+  padding: 7px 10px;
+  border-radius: 0;
+  font: inherit;
+  font-size: 0.88rem;
   border: 1px solid #222;
   background: #fff;
   color: #111;
@@ -117,6 +226,7 @@ button {
 }
 
 button:hover {
+  background: #f2f2f2;
   background: #f5f5f5;
 }
 
@@ -124,18 +234,24 @@ button:hover {
   min-height: 1.2em;
   margin: 8px 0 0;
   color: var(--muted);
+  font-size: 0.8rem;
   font-size: 0.82rem;
 }
 
 .key {
   display: flex;
   flex-wrap: wrap;
+  gap: 8px;
   gap: 10px;
 }
 
 .swatch {
   width: 9px;
   height: 9px;
+  border-radius: 0;
+  display: inline-block;
+  margin-right: 4px;
+  border: 1px solid rgba(0, 0, 0, 0.2);
   border-radius: 2px;
   display: inline-block;
   margin-right: 4px;
@@ -149,11 +265,14 @@ button:hover {
 
 .months-grid {
   display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(214px, 1fr));
   grid-template-columns: repeat(auto-fill, minmax(212px, 1fr));
   gap: 10px;
 }
 
 .month-card {
+  border: 1px solid #111;
+  border-radius: 0;
   border: 1px solid var(--border);
   border-radius: 6px;
   padding: 8px;
@@ -161,6 +280,7 @@ button:hover {
 
 .month-title {
   margin: 0 0 6px;
+  font-size: 0.82rem;
   font-size: 0.85rem;
 }
 
@@ -171,6 +291,13 @@ button:hover {
 }
 
 .day-cell {
+  height: 20px;
+  border-radius: 0;
+  border: 1px solid rgba(0, 0, 0, 0.15);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.68rem;
   height: 22px;
   border-radius: 4px;
   border: 1px solid rgba(0, 0, 0, 0.08);
@@ -192,6 +319,9 @@ button:hover {
 
 @media (min-width: 880px) {
   .app {
+    grid-template-columns: minmax(340px, 1fr) 1.35fr;
+    align-items: start;
+  }
     grid-template-columns: minmax(320px, 1fr) 1.4fr;
     align-items: start;
   }

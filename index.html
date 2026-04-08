@@ -7,6 +7,27 @@
     <link rel="stylesheet" href="styles.css" />
   </head>
   <body>
+    <header class="navbar">
+      <h1>Accountability Tracker</h1>
+      <button id="infoToggle" class="icon-btn" aria-label="About this app" title="About this app">ⓘ</button>
+    </header>
+
+    <section id="aboutPanel" class="about-panel" aria-labelledby="about-heading">
+      <div class="about-content">
+        <h2 id="about-heading">What this app is for</h2>
+        <p>
+          This is a simple self-accountability tool. You define your own daily commitments, mark your outcome,
+          and review your honesty over time.
+        </p>
+        <ul>
+          <li>Write open-ended commitments for today.</li>
+          <li>Mark the day as completed, missed, or neutral.</li>
+          <li>Review your previous months in a compact visual grid.</li>
+        </ul>
+      </div>
+    </section>
+
+    <main class="app">
     <main class="app">
       <header class="topbar">
         <h1>Accountability Tracker</h1>
@@ -25,6 +46,13 @@
         <textarea
           id="activitiesInput"
           rows="6"
+          placeholder="Write your commitments for today..."
+        ></textarea>
+        <p class="label examples-label">Examples</p>
+        <pre class="examples">- 45 min workout
+- 2 hours deep work
+- 20 min reading
+- No social media before 6 PM</pre>
           placeholder="Examples:\n- 45 min workout\n- 2 hours deep work\n- 20 min reading\n- No social media before 6 PM"
         ></textarea>
 

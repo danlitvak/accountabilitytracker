@@ -1,4 +1,5 @@
 const STORAGE_KEY = "accountabilityTracker.v1";
+const INFO_COLLAPSED_KEY = "accountabilityTracker.infoCollapsed";
 const MONTH_COUNT = 6;
 
 const todayDate = new Date();
@@ -10,6 +11,8 @@ const statusInputs = document.querySelectorAll('input[name="status"]');
 const saveBtn = document.getElementById("saveBtn");
 const saveMessage = document.getElementById("saveMessage");
 const monthsGrid = document.getElementById("monthsGrid");
+const aboutPanel = document.getElementById("aboutPanel");
+const infoToggle = document.getElementById("infoToggle");
 
 let data = loadData();
 
@@ -23,10 +26,25 @@ function init() {
     day: "numeric",
   });
 
+  const isCollapsed = localStorage.getItem(INFO_COLLAPSED_KEY) === "1";
+  setAboutPanelCollapsed(isCollapsed);
+
   populateTodayForm();
   renderMonths();
 
   saveBtn.addEventListener("click", onSave);
+  infoToggle.addEventListener("click", onToggleInfo);
+}
+
+function onToggleInfo() {
+  const collapsed = !aboutPanel.classList.contains("is-collapsed");
+  setAboutPanelCollapsed(collapsed);
+  localStorage.setItem(INFO_COLLAPSED_KEY, collapsed ? "1" : "0");
+}
+
+function setAboutPanelCollapsed(collapsed) {
+  aboutPanel.classList.toggle("is-collapsed", collapsed);
+  infoToggle.setAttribute("aria-expanded", String(!collapsed));
 }
 
 function populateTodayForm() {
@@ -83,6 +101,7 @@ function buildMonthCard(monthDate) {
     const entry = data[key];
     const status = entry?.status || "empty";
 
+    const cell = document.createElement("div");
     const cell = document.createElement("button");
     cell.type = "button";
     cell.className = `day-cell ${status}`;
