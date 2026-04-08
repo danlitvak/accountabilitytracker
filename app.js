@@ -2,6 +2,37 @@ const STORAGE_KEY = "accountabilityTracker.v1";
 const INFO_COLLAPSED_KEY = "accountabilityTracker.infoCollapsed";
 const MONTH_COUNT = 6;
 const WEEKDAY_LABELS = ["S", "M", "T", "W", "T", "F", "S"];
+const EXAMPLE_GYM_DATES = [
+  "2023-04-23", "2023-04-25", "2023-04-26", "2023-04-27", "2023-04-28", "2023-04-30",
+  "2023-05-05", "2023-05-11", "2023-05-14", "2023-05-16", "2023-05-18", "2023-05-19",
+  "2023-05-20", "2023-05-21", "2023-05-22", "2023-05-25", "2023-05-26", "2023-05-27",
+  "2023-06-02", "2023-06-04", "2023-06-06", "2023-06-08", "2023-06-09", "2023-06-16",
+  "2023-06-17", "2023-06-18", "2023-06-20", "2023-06-23", "2023-06-24", "2023-06-27",
+  "2023-06-30", "2023-07-01", "2023-07-05", "2023-07-07", "2023-07-11", "2023-07-14",
+  "2023-07-15", "2023-07-16", "2023-07-18", "2023-07-20", "2023-07-21", "2023-07-25",
+  "2023-07-26", "2023-07-27", "2023-07-29", "2023-08-01", "2023-08-16", "2023-08-17",
+  "2023-08-18", "2023-08-19", "2023-08-21", "2023-08-22", "2023-08-23", "2023-08-24",
+  "2023-08-25", "2023-08-26", "2023-08-28", "2023-08-29", "2023-08-30", "2023-09-01",
+  "2023-09-03", "2023-09-06", "2023-09-08", "2023-09-09", "2023-09-11", "2023-09-13",
+  "2023-09-14", "2023-09-15", "2023-09-16", "2023-09-17", "2023-09-18", "2023-09-20",
+  "2023-09-21", "2023-09-24", "2023-09-25", "2023-09-29", "2023-09-30", "2023-10-07",
+  "2023-10-08", "2023-10-09", "2023-10-12", "2023-10-15", "2023-10-17", "2023-10-20",
+  "2023-10-22", "2023-10-24", "2023-10-29", "2023-11-03", "2023-11-07", "2023-11-09",
+  "2023-11-12", "2023-11-21", "2023-11-25", "2023-12-07", "2023-12-17", "2023-12-23",
+  "2024-01-06", "2024-01-07", "2024-01-14", "2024-01-19", "2024-01-21", "2024-01-27",
+  "2024-02-17", "2024-02-24", "2024-02-25", "2024-03-02", "2024-03-10", "2024-03-23",
+  "2024-03-24", "2024-03-26", "2024-04-02", "2024-04-07", "2024-04-09", "2024-05-20",
+  "2024-05-28", "2024-06-14", "2024-06-27", "2024-07-12", "2024-07-13", "2024-07-14",
+  "2024-07-18", "2024-07-19", "2024-07-21", "2024-07-22", "2024-07-29", "2024-08-17",
+  "2024-09-09", "2024-09-11", "2024-09-14", "2024-09-16", "2024-10-19", "2024-10-20",
+  "2024-10-26", "2024-10-27", "2024-10-30", "2024-11-05", "2024-12-01", "2024-12-05",
+  "2024-12-26", "2024-12-28", "2024-12-30", "2025-01-06", "2025-01-08", "2025-01-25",
+  "2025-02-01", "2025-02-09", "2025-02-12", "2025-02-20", "2025-03-15", "2025-03-29",
+  "2025-04-14", "2025-04-30", "2025-05-22", "2025-06-04", "2025-06-09", "2025-06-18",
+  "2026-02-06", "2026-02-08", "2026-02-09", "2026-02-18", "2026-02-25", "2026-02-26",
+  "2026-03-02", "2026-03-04", "2026-03-05", "2026-03-10", "2026-03-11", "2026-03-19",
+  "2026-03-30",
+];
 
 const todayDate = new Date();
 const todayKey = formatDateKey(todayDate);
@@ -21,8 +52,13 @@ const currentStreakEl = document.getElementById("currentStreak");
 const dayPreviewDateEl = document.getElementById("dayPreviewDate");
 const dayPreviewStatusEl = document.getElementById("dayPreviewStatus");
 const dayPreviewTextEl = document.getElementById("dayPreviewText");
+const exampleToggle = document.getElementById("exampleToggle");
+const modeBadge = document.getElementById("modeBadge");
 
-let data = loadData();
+const exampleData = buildExampleData(EXAMPLE_GYM_DATES);
+const userData = loadData();
+let isExampleMode = false;
+let data = userData;
 
 init();
 
@@ -45,7 +81,9 @@ function init() {
   saveMissedBtn.addEventListener("click", () => onSave("missed"));
   saveNeutralBtn.addEventListener("click", () => onSave("neutral"));
   infoToggle.addEventListener("click", onToggleInfo);
+  exampleToggle.addEventListener("click", onToggleExampleMode);
   aboutPanel.addEventListener("transitionend", onAboutPanelTransitionEnd);
+  syncModeUI();
 }
 
 function onToggleInfo() {
@@ -102,18 +140,47 @@ function populateTodayForm() {
 }
 
 function onSave(status) {
-  data[todayKey] = {
+  if (isExampleMode) {
+    saveMessage.textContent = "Example data is read-only";
+    return;
+  }
+
+  userData[todayKey] = {
     status,
     activities: activitiesInput.value.trim(),
     updatedAt: new Date().toISOString(),
   };
 
   persistData();
+  data = userData;
   renderDashboard();
   saveMessage.textContent = `${formatSavedLabel(status)} ${new Date().toLocaleTimeString([], {
     hour: "numeric",
     minute: "2-digit",
   })}`;
+}
+
+function onToggleExampleMode() {
+  isExampleMode = !isExampleMode;
+  data = isExampleMode ? exampleData : userData;
+  populateTodayForm();
+  renderDashboard();
+  resetDayPreview();
+  saveMessage.textContent = isExampleMode ? "Example gym log loaded" : "";
+  syncModeUI();
+}
+
+function syncModeUI() {
+  exampleToggle.classList.toggle("is-active", isExampleMode);
+  exampleToggle.setAttribute("aria-pressed", String(isExampleMode));
+  exampleToggle.textContent = isExampleMode ? "My Data" : "Example";
+
+  activitiesInput.disabled = isExampleMode;
+  saveCompletedBtn.disabled = isExampleMode;
+  saveMissedBtn.disabled = isExampleMode;
+  saveNeutralBtn.disabled = isExampleMode;
+
+  modeBadge.hidden = !isExampleMode;
 }
 
 function renderDashboard() {
@@ -301,7 +368,7 @@ function loadData() {
 }
 
 function persistData() {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(userData));
 }
 
 function formatDateKey(date) {
@@ -337,4 +404,18 @@ function formatStatusLabel(status) {
   }
 
   return "No entry";
+}
+
+function buildExampleData(dateKeys) {
+  const entries = {};
+
+  dateKeys.forEach((key) => {
+    entries[key] = {
+      status: "completed",
+      activities: "gym",
+      updatedAt: `${key}T12:00:00.000Z`,
+    };
+  });
+
+  return entries;
 }
