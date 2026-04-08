@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Accountability Tracker</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <main class="app">
+      <header class="topbar">
+        <h1>Accountability Tracker</h1>
+        <p class="subtitle">
+          Log what you committed to do today. Review the previous months and stay honest with yourself.
+        </p>
+      </header>
+
+      <section class="panel today-panel" aria-labelledby="today-heading">
+        <div class="panel-header">
+          <h2 id="today-heading">Today</h2>
+          <p id="todayDate" class="date-label"></p>
+        </div>
+
+        <label for="activitiesInput" class="label">Activities / commitments</label>
+        <textarea
+          id="activitiesInput"
+          rows="6"
+          placeholder="Examples:\n- 45 min workout\n- 2 hours deep work\n- 20 min reading\n- No social media before 6 PM"
+        ></textarea>
+
+        <div class="status-controls" role="radiogroup" aria-label="Daily status">
+          <span class="label inline">Status</span>
+          <label><input type="radio" name="status" value="completed" /> Completed</label>
+          <label><input type="radio" name="status" value="missed" /> Missed</label>
+          <label><input type="radio" name="status" value="neutral" /> In progress / not scored</label>
+        </div>
+
+        <button id="saveBtn" type="button">Save today</button>
+        <p id="saveMessage" class="save-message" aria-live="polite"></p>
+      </section>
+
+      <section class="panel overview-panel" aria-labelledby="overview-heading">
+        <div class="panel-header">
+          <h2 id="overview-heading">Past months overview</h2>
+          <p class="key">
+            <span><i class="swatch completed"></i> completed</span>
+            <span><i class="swatch missed"></i> missed</span>
+            <span><i class="swatch neutral"></i> neutral</span>
+            <span><i class="swatch empty"></i> no entry</span>
+          </p>
+        </div>
+        <div id="monthsGrid" class="months-grid"></div>
+      </section>
+    </main>
+
+    <script src="app.js"></script>
+  </body>
+</html>
