@@ -1,86 +1,113 @@
 <!doctype html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Accountability Tracker</title>
-    <link rel="stylesheet" href="styles.css" />
-  </head>
-  <body>
-    <header class="navbar">
-      <h1>Accountability Tracker</h1>
-      <button id="infoToggle" class="icon-btn" aria-label="About this app" title="About this app">ⓘ</button>
-    </header>
 
-    <section id="aboutPanel" class="about-panel" aria-labelledby="about-heading">
-      <div class="about-content">
-        <h2 id="about-heading">What this app is for</h2>
-        <p>
-          This is a simple self-accountability tool. You define your own daily commitments, mark your outcome,
-          and review your honesty over time.
-        </p>
-        <ul>
-          <li>Write open-ended commitments for today.</li>
-          <li>Mark the day as completed, missed, or neutral.</li>
-          <li>Review your previous months in a compact visual grid.</li>
-        </ul>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Accountability Tracker</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+
+<body>
+  <header class="site-header">
+    <div>
+      <p class="eyebrow">Daily accountability</p>
+      <h1>Accountability Tracker</h1>
+    </div>
+    <button id="infoToggle" class="icon-btn" type="button" aria-label="Toggle tracker details"
+      aria-controls="aboutPanel" aria-expanded="false" title="Toggle tracker details">
+      <span aria-hidden="true">i</span>
+    </button>
+  </header>
+
+  <section id="aboutPanel" class="about-panel is-collapsed" aria-labelledby="aboutHeading">
+    <div class="about-grid">
+      <div>
+        <h2 id="aboutHeading">Use</h2>
+        <p>Write today&apos;s commitments, score the day, save.</p>
+      </div>
+      <div>
+        <h2>Key</h2>
+        <p>Green = completed. Red = missed. Gray = neutral.</p>
+      </div>
+      <div>
+        <h2>Author</h2>
+        <p>Daniel Litvak, project for NURS180 at UBC</p>
+      </div>
+      <div>
+        <h2>Inspiration</h2>
+        <p>Research often shows that tracking habits and adding accountability can support consistency and reduce stress
+          through clearer follow-through.</p>
+      </div>
+    </div>
+  </section>
+
+  <main class="app-shell">
+    <section class="panel today-panel" aria-labelledby="todayHeading">
+      <div class="panel-top">
+        <div>
+          <p class="panel-label">Today</p>
+          <h2 id="todayHeading">Daily entry</h2>
+        </div>
+        <p id="todayDate" class="date-label"></p>
+      </div>
+
+      <div class="stats-strip" aria-label="Quick stats">
+        <article class="stat-card">
+          <span class="stat-label">Last 30</span>
+          <strong id="last30Completed">0</strong>
+          <span class="stat-foot">completed</span>
+        </article>
+        <article class="stat-card">
+          <span class="stat-label">Last 30</span>
+          <strong id="last30Missed">0</strong>
+          <span class="stat-foot">missed</span>
+        </article>
+        <article class="stat-card">
+          <span class="stat-label">Current</span>
+          <strong id="currentStreak">0</strong>
+          <span class="stat-foot">streak</span>
+        </article>
+      </div>
+
+      <label for="activitiesInput" class="field-label">Commitments</label>
+      <textarea id="activitiesInput" rows="7"></textarea>
+
+      <div class="action-row">
+        <div class="action-buttons">
+          <button id="saveCompletedBtn" class="action-btn action-btn-completed" type="button">Done</button>
+          <button id="saveMissedBtn" class="action-btn action-btn-missed" type="button">Missed</button>
+          <button id="saveNeutralBtn" class="action-btn action-btn-neutral" type="button">Notes</button>
+        </div>
+        <p id="saveMessage" class="save-message" aria-live="polite"></p>
       </div>
     </section>
 
-    <main class="app">
-    <main class="app">
-      <header class="topbar">
-        <h1>Accountability Tracker</h1>
-        <p class="subtitle">
-          Log what you committed to do today. Review the previous months and stay honest with yourself.
-        </p>
-      </header>
-
-      <section class="panel today-panel" aria-labelledby="today-heading">
-        <div class="panel-header">
-          <h2 id="today-heading">Today</h2>
-          <p id="todayDate" class="date-label"></p>
+    <section class="panel overview-panel" aria-labelledby="overviewHeading">
+      <div class="panel-top">
+        <div>
+          <p class="panel-label">Overview</p>
+          <h2 id="overviewHeading">Recent months</h2>
         </div>
-
-        <label for="activitiesInput" class="label">Activities / commitments</label>
-        <textarea
-          id="activitiesInput"
-          rows="6"
-          placeholder="Write your commitments for today..."
-        ></textarea>
-        <p class="label examples-label">Examples</p>
-        <pre class="examples">- 45 min workout
-- 2 hours deep work
-- 20 min reading
-- No social media before 6 PM</pre>
-          placeholder="Examples:\n- 45 min workout\n- 2 hours deep work\n- 20 min reading\n- No social media before 6 PM"
-        ></textarea>
-
-        <div class="status-controls" role="radiogroup" aria-label="Daily status">
-          <span class="label inline">Status</span>
-          <label><input type="radio" name="status" value="completed" /> Completed</label>
-          <label><input type="radio" name="status" value="missed" /> Missed</label>
-          <label><input type="radio" name="status" value="neutral" /> In progress / not scored</label>
+        <div class="legend" aria-label="Status legend">
+          <span><i class="swatch completed"></i>C</span>
+          <span><i class="swatch missed"></i>M</span>
+          <span><i class="swatch neutral"></i>N</span>
+          <span><i class="swatch empty"></i>0</span>
         </div>
-
-        <button id="saveBtn" type="button">Save today</button>
-        <p id="saveMessage" class="save-message" aria-live="polite"></p>
+      </div>
+      <section id="dayPreview" class="day-preview" aria-live="polite">
+        <div class="day-preview-top">
+          <p id="dayPreviewDate" class="day-preview-date">Inspect a date</p>
+          <p id="dayPreviewStatus" class="day-preview-status">Hover or tap a day</p>
+        </div>
+        <p id="dayPreviewText" class="day-preview-text">Saved commitments and notes will show here.</p>
       </section>
+      <div id="monthsGrid" class="months-grid"></div>
+    </section>
+  </main>
 
-      <section class="panel overview-panel" aria-labelledby="overview-heading">
-        <div class="panel-header">
-          <h2 id="overview-heading">Past months overview</h2>
-          <p class="key">
-            <span><i class="swatch completed"></i> completed</span>
-            <span><i class="swatch missed"></i> missed</span>
-            <span><i class="swatch neutral"></i> neutral</span>
-            <span><i class="swatch empty"></i> no entry</span>
-          </p>
-        </div>
-        <div id="monthsGrid" class="months-grid"></div>
-      </section>
-    </main>
+  <script src="app.js"></script>
+</body>
 
-    <script src="app.js"></script>
-  </body>
 </html>
