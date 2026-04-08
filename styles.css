@@ -1,0 +1,261 @@
+:root {
+  --bg: #ffffff;
+  --fg: #111111;
+  --muted: #5f5f5f;
+  --border: #cfcfcf;
+  --completed: #14833b;
+  --missed: #b42323;
+  --neutral: #6a6a6a;
+  --empty: #eeeeee;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--fg);
+  font-family: Inter, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  line-height: 1.35;
+}
+
+.navbar {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 16px;
+  background: #fff;
+  border-bottom: 2px solid #111;
+}
+
+.navbar h1 {
+  margin: 0;
+  font-size: 1rem;
+  letter-spacing: 0.02em;
+}
+
+.icon-btn {
+  border: 1px solid #111;
+  background: #fff;
+  color: #111;
+  width: 30px;
+  height: 30px;
+  border-radius: 4px;
+  font-size: 1rem;
+  cursor: pointer;
+}
+
+.about-panel {
+  border-bottom: 2px solid #111;
+  background: #fff;
+}
+
+.about-panel.is-collapsed {
+  display: none;
+}
+
+.about-content {
+  max-width: 1080px;
+  margin: 0 auto;
+  padding: 12px 18px;
+}
+
+.about-content h2 {
+  margin: 0 0 4px;
+  font-size: 0.96rem;
+}
+
+.about-content p,
+.about-content ul {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.85rem;
+}
+
+.about-content ul {
+  margin-top: 6px;
+  padding-left: 18px;
+}
+
+.app {
+  max-width: 1080px;
+  margin: 0 auto;
+  padding: 14px;
+  display: grid;
+  gap: 12px;
+}
+
+.panel {
+  border: 2px solid #111;
+  border-radius: 0;
+  padding: 10px;
+}
+
+.panel-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+h2 {
+  margin: 0;
+  font-size: 1rem;
+}
+
+.date-label,
+.key {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.82rem;
+}
+
+.label {
+  display: block;
+  font-size: 0.82rem;
+  color: var(--muted);
+  margin-bottom: 4px;
+}
+
+.examples-label {
+  margin-top: 6px;
+}
+
+.examples {
+  margin: 0;
+  padding: 8px;
+  border: 1px solid var(--border);
+  background: #fafafa;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 0.78rem;
+  white-space: pre-wrap;
+}
+
+.label.inline {
+  margin: 0 4px 0 0;
+}
+
+textarea {
+  width: 100%;
+  font: inherit;
+  color: var(--fg);
+  border: 1px solid #111;
+  border-radius: 0;
+  padding: 8px;
+  resize: vertical;
+  min-height: 112px;
+}
+
+.status-controls {
+  margin-top: 10px;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+  font-size: 0.86rem;
+}
+
+.status-controls label {
+  display: inline-flex;
+  gap: 4px;
+  align-items: center;
+}
+
+button {
+  margin-top: 10px;
+  border: 1px solid #111;
+  background: #fff;
+  color: #111;
+  padding: 7px 10px;
+  border-radius: 0;
+  font: inherit;
+  font-size: 0.88rem;
+  cursor: pointer;
+}
+
+button:hover {
+  background: #f2f2f2;
+}
+
+.save-message {
+  min-height: 1.2em;
+  margin: 8px 0 0;
+  color: var(--muted);
+  font-size: 0.8rem;
+}
+
+.key {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.swatch {
+  width: 9px;
+  height: 9px;
+  border-radius: 0;
+  display: inline-block;
+  margin-right: 4px;
+  border: 1px solid rgba(0, 0, 0, 0.2);
+}
+
+.swatch.completed { background: var(--completed); }
+.swatch.missed { background: var(--missed); }
+.swatch.neutral { background: var(--neutral); }
+.swatch.empty { background: var(--empty); }
+
+.months-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(214px, 1fr));
+  gap: 10px;
+}
+
+.month-card {
+  border: 1px solid #111;
+  border-radius: 0;
+  padding: 8px;
+}
+
+.month-title {
+  margin: 0 0 6px;
+  font-size: 0.82rem;
+}
+
+.day-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 4px;
+}
+
+.day-cell {
+  height: 20px;
+  border-radius: 0;
+  border: 1px solid rgba(0, 0, 0, 0.15);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.68rem;
+}
+
+.day-cell.placeholder {
+  border-color: transparent;
+  background: transparent;
+}
+
+.day-cell.completed { background: var(--completed); color: #fff; }
+.day-cell.missed { background: var(--missed); color: #fff; }
+.day-cell.neutral { background: var(--neutral); color: #fff; }
+.day-cell.empty { background: var(--empty); color: #333; }
+
+@media (min-width: 880px) {
+  .app {
+    grid-template-columns: minmax(340px, 1fr) 1.35fr;
+    align-items: start;
+  }
+}

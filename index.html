@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Accountability Tracker</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <header class="navbar">
+      <h1>Accountability Tracker</h1>
+      <button id="infoToggle" class="icon-btn" aria-label="About this app" title="About this app">ⓘ</button>
+    </header>
+
+    <section id="aboutPanel" class="about-panel" aria-labelledby="about-heading">
+      <div class="about-content">
+        <h2 id="about-heading">What this app is for</h2>
+        <p>
+          This is a simple self-accountability tool. You define your own daily commitments, mark your outcome,
+          and review your honesty over time.
+        </p>
+        <ul>
+          <li>Write open-ended commitments for today.</li>
+          <li>Mark the day as completed, missed, or neutral.</li>
+          <li>Review your previous months in a compact visual grid.</li>
+        </ul>
+      </div>
+    </section>
+
+    <main class="app">
+      <section class="panel today-panel" aria-labelledby="today-heading">
+        <div class="panel-header">
+          <h2 id="today-heading">Today</h2>
+          <p id="todayDate" class="date-label"></p>
+        </div>
+
+        <label for="activitiesInput" class="label">Activities / commitments</label>
+        <textarea
+          id="activitiesInput"
+          rows="6"
+          placeholder="Write your commitments for today..."
+        ></textarea>
+        <p class="label examples-label">Examples</p>
+        <pre class="examples">- 45 min workout
+- 2 hours deep work
+- 20 min reading
+- No social media before 6 PM</pre>
+
+        <div class="status-controls" role="radiogroup" aria-label="Daily status">
+          <span class="label inline">Status</span>
+          <label><input type="radio" name="status" value="completed" /> Completed</label>
+          <label><input type="radio" name="status" value="missed" /> Missed</label>
+          <label><input type="radio" name="status" value="neutral" /> In progress / not scored</label>
+        </div>
+
+        <button id="saveBtn" type="button">Save today</button>
+        <p id="saveMessage" class="save-message" aria-live="polite"></p>
+      </section>
+
+      <section class="panel overview-panel" aria-labelledby="overview-heading">
+        <div class="panel-header">
+          <h2 id="overview-heading">Past months overview</h2>
+          <p class="key">
+            <span><i class="swatch completed"></i> completed</span>
+            <span><i class="swatch missed"></i> missed</span>
+            <span><i class="swatch neutral"></i> neutral</span>
+            <span><i class="swatch empty"></i> no entry</span>
+          </p>
+        </div>
+        <div id="monthsGrid" class="months-grid"></div>
+      </section>
+    </main>
+
+    <script src="app.js"></script>
+  </body>
+</html>
