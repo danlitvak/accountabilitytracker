@@ -49,6 +49,12 @@ input {
   backdrop-filter: blur(6px);
 }
 
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
 .eyebrow,
 .panel-label,
 .date-label,
@@ -77,6 +83,7 @@ legend {
 }
 
 .icon-btn,
+.nav-btn,
 .action-btn,
 .day-cell {
   appearance: none;
@@ -84,7 +91,8 @@ legend {
   border-radius: 0;
 }
 
-.icon-btn {
+.icon-btn,
+.nav-btn {
   width: 42px;
   height: 42px;
   padding: 0;
@@ -95,7 +103,15 @@ legend {
   transition: background-color 160ms ease, border-color 160ms ease, color 160ms ease;
 }
 
-.icon-btn.is-active {
+.nav-btn {
+  width: auto;
+  min-width: 88px;
+  padding: 0 12px;
+  font-size: 0.9rem;
+}
+
+.icon-btn.is-active,
+.nav-btn.is-active {
   background: var(--ink);
   border-color: var(--ink);
   color: #fff;
@@ -169,6 +185,18 @@ legend {
   font-size: 1.25rem;
 }
 
+.mode-badge {
+  display: inline-block;
+  margin: 0 0 12px;
+  padding: 5px 8px;
+  border: 1px solid rgba(18, 122, 68, 0.28);
+  background: rgba(18, 122, 68, 0.08);
+  color: var(--completed);
+  font-size: 0.78rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
 .stats-strip {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -207,6 +235,11 @@ textarea {
   resize: vertical;
 }
 
+textarea:disabled {
+  background: var(--panel-muted);
+  color: var(--muted);
+}
+
 .action-row {
   display: grid;
   gap: 8px;
@@ -225,6 +258,11 @@ textarea {
   color: var(--ink);
   cursor: pointer;
   transition: background-color 160ms ease, border-color 160ms ease, color 160ms ease;
+}
+
+.action-btn:disabled {
+  opacity: 0.45;
+  cursor: default;
 }
 
 .action-btn-completed {
@@ -395,6 +433,7 @@ textarea {
 }
 
 .icon-btn:hover,
+.nav-btn:hover,
 .action-btn:hover,
 .day-cell:hover {
   border-color: var(--line-strong);
